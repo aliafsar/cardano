@@ -13,7 +13,7 @@
   tasks:
     - name: Recursively remove cardano-node2 folder
       file:
-        path: {{ home_folder }}/git/cardano-node2/
+        path: "{{ home_folder }}/git/cardano-node2/"
         state: absent
       register: cardano_remove_node2_folder
     - debug:
@@ -21,15 +21,15 @@
 
     - name: Copy current Cardano code to Backup Cardano node folder
       synchronize:
-        src: {{ home_folder }}/cardano-node
-        dest: {{ home_folder }}/cardano-node2
+        src: "{{ home_folder }}/cardano-node"
+        dest: "{{ home_folder }}/cardano-node2"
       register: sync_current_node_to_node2_folder
     - debug:
         msg: "{{ sync_current_node_to_node2_folder }}"
 
     - name: Recursively remove cardano-node binaries
       file:
-        path: {{ home_folder }}/git/cardano-node
+        path: "{{ home_folder }}/git/cardano-node"
         state: absent
       register: remove_current_cardano_folder
     - debug:
@@ -38,7 +38,7 @@
     - name: Cardano Node | Git checkout Cardano source"
       git:
         repo: "{{ cardano_github_url }}"
-        dest: {{ home_folder }}/cardano-node
+        dest: "{{ home_folder }}/cardano-node"
         clone: yes
         version: "{{ cardano_version_tag }}"
         accept_hostkey: yes
@@ -54,7 +54,7 @@
 
     - name: Reset of Cardano build folder
       file:
-        path: {{ home_folder }}/git/cardano-node/dist-newstyle/build/x86_64-linux/ghc-8.6.5
+        path: "{{ home_folder }}/git/cardano-node/dist-newstyle/build/x86_64-linux/ghc-8.6.5"
         state: absent
       register: remove_build_folder
     - debug:
@@ -65,9 +65,9 @@
 - name: Cardano Service Check
   hosts: cardano_RELAY4
   become: yes
+# Define variables for playbook
   vars:
-    source_path: "/home/danu/git/cardano-node/dist-newstyle/build/x86_64-linux/ghc-8.6.5/cardano-node-1.19.1/x/cardano-node/build/cardano-node"
-    cardano_version: "1.19.1"
+    home_folder: "/home/danu"                                                       # Home directory of user that installed Cardano
 
   tasks:
 
@@ -108,7 +108,7 @@
 
     - name: Copy Cardano CLI file with owner and permission
       copy:
-        src: /home/danu/git/cardano-node/dist-newstyle/build/x86_64-linux/ghc-8.6.5/cardano-cli-1.19.1/x/cardano-cli/build/cardano-cli/cardano-cli
+        src: "{{ home_folder }}/git/cardano-node/dist-newstyle/build/x86_64-linux/ghc-8.6.5/cardano-cli-1.19.1/x/cardano-cli/build/cardano-cli/cardano-cli"
         dest: /usr/local/bin/cardano-cli
         owner: root
         group: root
@@ -125,6 +125,6 @@
       systemd:
         name: cardano-node
         state: started
-      register: CARDANO_NODE_STARTED
+      register: started_cardano_service
     - debug:
-        msg: "{{ CARDANO_NODE_STARTED }}"
+        msg: "{{ started_cardano_service }}"
