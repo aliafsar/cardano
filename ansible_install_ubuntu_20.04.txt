@@ -1,0 +1,37 @@
+Update the apt packages repo cache.
+This is to be done where ansible will undertake all its work from (Tower) to all the Hosts.
+
+  $ sudo apt update
+
+Install Ansible with following command, if required confirm install by Y.
+
+  $ sudo apt install ansible
+
+Run following command to confirm ansible is working correctly.
+
+  $ ansible --version
+
+Set-up SSH on Tower.  Enter defaults with no passphrase.
+
+  $  ssh-keygen
+
+Set-up ansible account on all Hosts and Tower server. Enter prompts and give password.
+
+  $ sudo adduser ansible
+
+Configure password-less sudo access to the ansible user
+
+  $ echo "ansible ALL=(ALL) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/ansible
+
+From Tower to Host (your first host) set-up ssh public keys.  Enter where required.
+
+  $ ssh-copy-id ansible@192.168.1.30
+
+Disable password-based login for the ansible user.
+
+  $ sudo usermod -L ansible
+
+
+To test passwordless ssh from Tower to Host1
+
+  $ ssh ansible@192.168.1.30
