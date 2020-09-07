@@ -1,0 +1,84 @@
+---
+- name: Cardano Service Check
+  hosts: cardano_TOWER
+  become: yes
+  vars:
+    source_path: "/home/danu/git/cardano-node/dist-newstyle/build/x86_64-linux/ghc-8.6.5/cardano-node-1.19.1/x/cardano-node/build/cardano-node"
+    cardano_version: "1.19.1"
+    home_folder: "/home/danu"
+  tasks:
+    - name: Recursively remove directory
+      file:
+        path: {{ home_folder }}/git/cardano-node-old/
+        state: absent
+      register: CARDANO_REMOVE_OLD_FOLDER
+    - debug:
+        msg: "{{ CARDANO_REMOVE_OLD_FOLDER }}"
+
+    - name: Synchronization of src on the control machine to dest on the remote hosts
+      synchronize:
+        src: some/relative/path
+        dest: /some/absolute/path
+
+
+- name: Cardano Service Check
+  hosts: cardano_RELAY4
+  become: yes
+  vars:
+    source_path: "/home/danu/git/cardano-node/dist-newstyle/build/x86_64-linux/ghc-8.6.5/cardano-node-1.19.1/x/cardano-node/build/cardano-node"
+    cardano_version: "1.19.1"
+
+  tasks:
+
+    - name: Check status of Cardano Service
+      systemd:
+        name: cardano-node
+        state: started
+      register: CARDANO_NODE_STATUS
+
+    - name: Stop Cardano Service
+      systemd:
+        name: cardano-node
+        state: stopped
+      register: CARDANO_NODE_STOP
+
+    - name: Copy Cardano Node file with owner and permission
+      copy:
+        src: "{{ source_path }}/cardano-node"
+        dest: /usr/local/bin/cardano-node
+        owner: root
+        group: root
+        mode: u=rwx,g=rx,o=rx
+      register: CARDANO_NODE_COPIED
+
+    - debug:
+        msg: "{{ CARDANO_NODE_COPIED }}"
+
+    - name: Cardano Node CHECK Version
+      shell: cardano-node version
+      register: CARDANO_INSTALLED_VERSION
+    - debug:
+        msg: "{{ CARDANO_INSTALLED_VERSION }}"
+
+    - name: Copy Cardano CLI file with owner and permission
+      copy:
+        src: /home/danu/git/cardano-node/dist-newstyle/build/x86_64-linux/ghc-8.6.5/cardano-cli-1.19.1/x/cardano-cli/build/cardano-cli/cardano-cli
+        dest: /usr/local/bin/cardano-cli
+        owner: root
+        group: root
+        mode: u=rwx,g=rx,o=rx
+      register: CARDANO_CLI_COPIED
+
+    - name: Cardano Node CHECK Version
+      shell: cardano-cli version
+      register: CARDANO_CLI_VERSION
+    - debug:
+        msg: "{{ CARDANO_CLI_VERSION }}"
+
+    - name: Start Cardano Service
+      systemd:
+        name: cardano-node
+        state: started
+      register: CARDANO_NODE_STARTED
+    - debug:
+        msg: "{{ CARDANO_NODE_STARTED }}"
