@@ -48,7 +48,7 @@
 
     - name: Update Cabal config
       lineinfile:
-        path: ""{{ home_folder }}/git/cardano-node/cabal.project.local"
+        path: "{{ home_folder }}/git/cardano-node/cabal.project.local"
         line: "{{ item }}"
         create: yes
       with_items:
