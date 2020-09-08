@@ -16,8 +16,6 @@
         path: "{{ home_folder }}/git/cardano-node2/"
         state: absent
       register: cardano_remove_node2_folder
-    - debug:
-        msg: "{{ cardano_remove_node2_folder }}"
 
     - name: Copying current Cardano code to Backup Cardano node folder
       synchronize:
@@ -39,8 +37,6 @@
         version: "{{ cardano_version_tag }}"
         accept_hostkey: yes
       register: cardano_repo_download
-    - debug:
-        msg: "{{ cardano_repo_download }}"
 
     - name: Update Cabal config
       lineinfile:
