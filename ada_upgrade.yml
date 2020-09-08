@@ -34,7 +34,7 @@
       register: remove_current_cardano_folder
     - debug:
         msg: "{{ remove_current_cardano_folder }}"
-
+:q!
     - name: Cardano Node | Git checkout Cardano source"
       git:
         repo: "{{ cardano_github_url }}"
@@ -47,11 +47,20 @@
         msg: "{{ cardano_repo_download }}"
 
     - name: Update Cabal config
-      shell: echo -e "package cardano-crypto-praos\n flags: -external-libsodium-vrf" > {{ home_folder }}/cardano-node/cabal.project.loca
+      shell: echo -e "\"package cardano-crypto-praos\n flags: -external-libsodium-vrf\" > {{ home_folder }}/cardano-node/cabal.project.local"
       register: Update_Cabal_Config
     - debug:
         msg: "{{ Update_Cabal_Config }}"
 
+    - name: Update Cabal config
+      lineinfile:
+        path: ""{{ home_folder }}/git/cardano-node/cabal.project.local"
+        line: "{{ item }}"
+        create: yes
+      with_items:
+        - 'package cardano-crypto-praos'
+        - ' flags: -external-libsodium-vrf'
+        
     - name: Reset of Cardano build folder
       file:
         path: "{{ home_folder }}/git/cardano-node/dist-newstyle/build/x86_64-linux/ghc-8.6.5"
