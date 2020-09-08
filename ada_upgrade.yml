@@ -88,6 +88,7 @@
         msg: "{{ check_cardano_node_pre_deployment }}"
 
     - name: Copy Cardano Node file with owner and permission
+      become: yes
       copy:
         src: "{{ home_folder }}/git/cardano-node/dist-newstyle/build/x86_64-linux/ghc-8.6.5/cardano-node-1.19.1/x/cardano-node/build/cardano-node"
         dest: /usr/local/bin/cardano-node
@@ -111,6 +112,7 @@
         msg: "{{ check_cardano_cli_pre_deployment }}"
 
     - name: Copy Cardano CLI file with owner and permission
+      become: yes
       copy:
         src: "{{ home_folder }}/git/cardano-node/dist-newstyle/build/x86_64-linux/ghc-8.6.5/cardano-cli-1.19.1/x/cardano-cli/build/cardano-cli/cardano-cli"
         dest: /usr/local/bin/cardano-cli
