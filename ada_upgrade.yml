@@ -11,7 +11,7 @@
 
 # Building of cardano  node and cli programs
   tasks:
-    - name: Recursively remove cardano-node2 folder
+    - name: Recursively removing cardano-node2 folder
       file:
         path: "{{ home_folder }}/git/cardano-node2/"
         state: absent
@@ -19,23 +19,19 @@
     - debug:
         msg: "{{ cardano_remove_node2_folder }}"
 
-    - name: Copy current Cardano code to Backup Cardano node folder
+    - name: Copying current Cardano code to Backup Cardano node folder
       synchronize:
         src: "{{ home_folder }}/git/cardano-node"
         dest: "{{ home_folder }}/git/cardano-node2"
       register: sync_current_node_to_node2_folder
-    - debug:
-        msg: "{{ sync_current_node_to_node2_folder }}"
 
-    - name: Recursively remove cardano-node binaries
+    - name: Recursively remove cardano-node binaries before git clone
       file:
         path: "{{ home_folder }}/git/cardano-node"
         state: absent
       register: remove_current_cardano_folder
-    - debug:
-        msg: "{{ remove_current_cardano_folder }}"
 
-    - name: Cardano Node | Git checkout Cardano source"
+    - name: Cloning Cardano Node from Git with tag version set in variable
       git:
         repo: "{{ cardano_github_url }}"
         dest: "{{ home_folder }}/git/cardano-node"
@@ -63,11 +59,14 @@
     - debug:
         msg: "{{ remove_build_folder }}"
 
-    - name: Build cardano-node and cardano-cli
-      shell: cd /home/danu/git/cardano-node | cabal build cardano-node cardano-cli
-      register: cardano_build_complete
+    - name: Building cardano-node and cardano-cli
+      shell: cabal build cardano-node cardano-cli
+      args:
+        chdir: "{{ home_folder }}/git/cardano-node"
+        register: cardano_build_complete
     - debug:
         msg: "{{ cardano_build_complete }}"
+
 # Deploying cardano node and cli programs
 
 - name: Cardano Service Check
