@@ -21,8 +21,8 @@
 
     - name: Copy current Cardano code to Backup Cardano node folder
       synchronize:
-        src: "{{ home_folder }}/cardano-node"
-        dest: "{{ home_folder }}/cardano-node2"
+        src: "{{ home_folder }}/git/cardano-node"
+        dest: "{{ home_folder }}/git/cardano-node2"
       register: sync_current_node_to_node2_folder
     - debug:
         msg: "{{ sync_current_node_to_node2_folder }}"
@@ -34,23 +34,17 @@
       register: remove_current_cardano_folder
     - debug:
         msg: "{{ remove_current_cardano_folder }}"
-:q!
+
     - name: Cardano Node | Git checkout Cardano source"
       git:
         repo: "{{ cardano_github_url }}"
-        dest: "{{ home_folder }}/cardano-node"
+        dest: "{{ home_folder }}/git/cardano-node"
         clone: yes
         version: "{{ cardano_version_tag }}"
         accept_hostkey: yes
       register: cardano_repo_download
     - debug:
         msg: "{{ cardano_repo_download }}"
-
-    - name: Update Cabal config
-      shell: echo -e "\"package cardano-crypto-praos\n flags: -external-libsodium-vrf\" > {{ home_folder }}/cardano-node/cabal.project.local"
-      register: Update_Cabal_Config
-    - debug:
-        msg: "{{ Update_Cabal_Config }}"
 
     - name: Update Cabal config
       lineinfile:
@@ -60,7 +54,7 @@
       with_items:
         - 'package cardano-crypto-praos'
         - ' flags: -external-libsodium-vrf'
-        
+
     - name: Reset of Cardano build folder
       file:
         path: "{{ home_folder }}/git/cardano-node/dist-newstyle/build/x86_64-linux/ghc-8.6.5"
@@ -69,6 +63,11 @@
     - debug:
         msg: "{{ remove_build_folder }}"
 
+    - name: Build cardano-node and cardano-cli
+      shell: cd /home/danu/git/cardano-node | cabal build cardano-node cardano-cli
+      register: cardano_build_complete
+    - debug:
+        msg: "{{ cardano_build_complete }}"
 # Deploying cardano node and cli programs
 
 - name: Cardano Service Check
