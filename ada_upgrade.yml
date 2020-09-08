@@ -1,7 +1,6 @@
 ---
 - name: Cardano Service Check
   hosts: cardano_TOWER
-  become: yes
 
 # Define variables for playbook
   vars:
@@ -58,10 +57,10 @@
         msg: "{{ remove_build_folder }}"
 
     - name: Building cardano-node and cardano-cli
-      shell: cabal build cardano-node cardano-cli
+      shell: /home/danu/.local/bin/cabal build cardano-node cardano-cli
       args:
         chdir: "{{ home_folder }}/git/cardano-node"
-        register: cardano_build_complete
+      register: cardano_build_complete
     - debug:
         msg: "{{ cardano_build_complete }}"
 
