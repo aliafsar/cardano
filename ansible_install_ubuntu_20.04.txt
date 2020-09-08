@@ -15,23 +15,20 @@ Set-up SSH on Tower.  Enter defaults with no passphrase.
 
   $  ssh-keygen
 
-Set-up ansible account on all Hosts and Tower server. Enter prompts and give password.
-
-  $ sudo adduser ansible
-
 Configure password-less sudo access to the ansible user
 
-  $ echo "ansible ALL=(ALL) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/ansible
+  $ echo "<username> ALL=(ALL) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/<username>
 
 From Tower to Host (your first host) set-up ssh public keys.  Enter where required.
 
-  $ ssh-copy-id ansible@192.168.1.30
-
-Disable password-based login for the ansible user.
-
-  $ sudo usermod -L ansible
-
+  $ ssh-copy-id <username>@192.168.1.30
 
 To test passwordless ssh from Tower to Host1
 
-  $ ssh ansible@192.168.1.30
+  $ ssh <username>@192.168.1.30
+
+
+Update /etc/ansible/hosts with your host and user details, example....
+
+[cardano_ALL]
+192.168.1.30    ansible_user=<username>

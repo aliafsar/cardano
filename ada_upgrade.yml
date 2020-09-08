@@ -24,7 +24,7 @@
         compress: yes
       register: sync_current_node_to_node2_folder
 
-    - name: Recursively remove cardano-node binaries before git clone
+    - name: Recursively removing cardano-node binaries before git clone
       file:
         path: "{{ home_folder }}/git/cardano-node"
         state: absent
@@ -39,7 +39,7 @@
         accept_hostkey: yes
       register: cardano_repo_download
 
-    - name: Update Cabal config
+    - name: Updating Cabal config
       lineinfile:
         path: "{{ home_folder }}/git/cardano-node/cabal.project.local"
         line: "{{ item }}"
@@ -48,7 +48,7 @@
         - 'package cardano-crypto-praos'
         - ' flags: -external-libsodium-vrf'
 
-    - name: Reset of Cardano build folder
+    - name: Resetting Cardano build folder
       file:
         path: "{{ home_folder }}/git/cardano-node/dist-newstyle/build/x86_64-linux/ghc-8.6.5"
         state: absent
@@ -56,7 +56,7 @@
     - debug:
         msg: "{{ remove_build_folder }}"
 
-    - name: Building cardano-node and cardano-cli
+    - name: Building cardano programs...will take time...have a break.
       shell: /home/danu/.local/bin/cabal build cardano-node cardano-cli
       args:
         chdir: "{{ home_folder }}/git/cardano-node"
