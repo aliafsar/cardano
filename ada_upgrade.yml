@@ -21,6 +21,8 @@
       synchronize:
         src: "{{ home_folder }}/git/cardano-node"
         dest: "{{ home_folder }}/git/cardano-node2"
+        delete: yes
+        recursive: yes
       register: sync_current_node_to_node2_folder
 
     - name: Recursively remove cardano-node binaries before git clone
