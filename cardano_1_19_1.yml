@@ -2,7 +2,7 @@
 - name: Cardano Service Check
   hosts: cardano_TOWER
 
-# Define variables for playbook
+# Define variables for playbook.
   vars:
     cardano_version_tag: "1.19.1"                                                   # Version of Cardano that will be upgraded to
     home_folder: "/home/danu"                                                       # Home directory of user that installed Cardano
