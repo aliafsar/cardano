@@ -19,6 +19,7 @@ Configure password-less sudo access to the ansible user
 
   $ echo "<username> ALL=(ALL) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/<username>
 
+echo "love2stake ALL=(ALL) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/love2stake
 From Tower to Host (your first host) set-up ssh public keys.  Enter where required.
 
   $ ssh-copy-id <username>@192.168.1.30
