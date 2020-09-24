@@ -11,6 +11,9 @@ tar -czvf name-of-archive.tar.gz /
 -v: Display progress in the terminal while creating the archive, also known as “verbose” mode.
 -f: Allows you to specify the filename of the archive.
 
-tar -xzvf archive.tar.gz -C /tmp
+tar -xzvf node1.20.0.tar.gz -C /tmp
 
 -C: uncompresses to a target folder
+
+
+ansible-playbook cardano_1_20.yml --extra-vars "home_folder=/home/danu node_folder=/home/danu/cardano-my-node node_user=danu"

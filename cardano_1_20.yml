@@ -75,7 +75,7 @@
 
     - name: Copy Cardano DB folder
       become: yes
-      become_user: {{ node_user }}
+      become_user: "{{ node_user }}"
       copy:
         src: "{{ home_folder }}/node1.20.0.tar.gz"
         dest: "{{ node_folder }}"
@@ -88,6 +88,12 @@
         name: cardano-node
         state: stopped
       register: stop_cardano_service
+
+    - name: Recursively removing Cardano DB folder
+      file:
+        path: "{{ node_folder }}/db"
+        state: absent
+      register: cardano_remove_cardano_db
 
     - name: Unarchive a file that is already on the remote machine
       unarchive:
