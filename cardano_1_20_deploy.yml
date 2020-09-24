@@ -1,0 +1,105 @@
+---
+- name: Cardano Service Check
+  hosts: cardano_TOWER
+
+# Define variables for playbook.
+# ansible-playbook release.yml --extra-vars "version=1.23.45 other_variable=foo"
+  vars:
+    cardano_github_url: "https://github.com/input-output-hk/cardano-node.git"
+
+# Building of cardano  node and cli programs
+  tasks:
+
+- name: Cardano Service Check
+  hosts: cardano_RELAY4
+  become: yes
+# Define variables for playbook
+  vars:
+
+  tasks:
+
+    - name: Copy Cardano DB folder
+      become: yes
+      become_user: "{{ node_user }}"
+      copy:
+        src: "{{ home_folder }}/node1.20.0.tar.gz"
+        dest: "{{ node_folder }}"
+      register: Copy_Cardano_DB
+    - debug:
+        msg: "{{ Copy_Cardano_DB }}"
+
+    - name: Stop Cardano Service
+      systemd:
+        name: cardano-node
+        state: stopped
+      register: stop_cardano_service
+
+    - name: Recursively removing Cardano DB folder
+      file:
+        path: "{{ node_folder }}/db"
+        state: absent
+      register: cardano_remove_cardano_db
+
+    - name: Unarchive a file that is already on the remote machine
+      unarchive:
+        src: "{{ node_folder }}/node1.20.0.tar.gz"
+        dest: "{{ node_folder }}"
+        remote_src: yes
+
+    - name: Recursively removing Cardano DB folder
+      file:
+        path: "{{ node_folder }}/node1.20.0.tar.gz"
+        state: absent
+      register: cardano_gzip_file
+
+    - name: Check Cardano NODE version PRE deployment
+      shell: cardano-node version
+      register: check_cardano_node_pre_deployment
+    - debug:
+        msg: "{{ check_cardano_node_pre_deployment }}"
+
+    - name: Copy Cardano Node file with owner and permission
+      copy:
+        src: "{{ home_folder }}/git/cardano-node/dist-newstyle/build/x86_64-linux/ghc-8.6.5/cardano-node-1.19.1/x/cardano-node/build/cardano-node/cardano-node"
+        dest: /usr/local/bin/
+        owner: root
+        group: root
+        mode: u=rwx,g=rx,o=rx
+      register: Copy_Cardano_Node_program_to_bin
+    - debug:
+        msg: "{{ Copy_Cardano_Node_program_to_bin }}"
+
+    - name: Check Cardano version POST deployment
+      shell: cardano-node version
+      register: check_cardano_node_post_deployment
+    - debug:
+        msg: "{{ check_cardano_node_post_deployment }}"
+
+    - name: Check Cardano CLI version PRE deployment
+      shell: cardano-cli version
+      register: check_cardano_cli_pre_deployment
+    - debug:
+        msg: "{{ check_cardano_cli_pre_deployment }}"
+
+    - name: Copy Cardano CLI file with owner and permission
+      copy:
+        src: "{{ home_folder }}/git/cardano-node/dist-newstyle/build/x86_64-linux/ghc-8.6.5/cardano-cli-1.19.1/x/cardano-cli/build/cardano-cli/cardano-cli"
+        dest: /usr/local/bin/
+        owner: root
+        group: root
+        mode: u=rwx,g=rx,o=rx
+      register: CARDANO_CLI_COPIED
+
+    - name: Check Cardano CLI version POST deployment
+      shell: cardano-cli version
+      register: check_cardano_cli_post_deployment
+    - debug:
+        msg: "{{ check_cardano_cli_post_deployment }}"
+
+    - name: Start Cardano NODE Service
+      systemd:
+        name: cardano-node
+        state: started
+      register: started_cardano_service
+    - debug:
+        msg: "{{ started_cardano_service }}"
